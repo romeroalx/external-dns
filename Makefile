@@ -80,7 +80,7 @@ test:
 BINARY        ?= external-dns
 SOURCES        = $(shell find . -name '*.go')
 IMAGE_STAGING  = gcr.io/k8s-staging-external-dns/$(BINARY)
-REGISTRY      ?= us.gcr.io/k8s-artifacts-prod/external-dns
+REGISTRY      ?= romeroalx
 IMAGE         ?= $(REGISTRY)/$(BINARY)
 VERSION       ?= $(shell git describe --tags --always --dirty --match "v*")
 BUILD_FLAGS   ?= -v
@@ -88,7 +88,7 @@ LDFLAGS       ?= -X sigs.k8s.io/external-dns/pkg/apis/externaldns.Version=$(VERS
 ARCH          ?= amd64
 SHELL          = /bin/bash
 IMG_PLATFORM  ?= linux/amd64,linux/arm64,linux/arm/v7
-IMG_PUSH      ?= true
+IMG_PUSH      ?= false
 IMG_SBOM      ?= none
 
 build: build/$(BINARY)
@@ -100,9 +100,9 @@ build.push/multiarch: ko
 	KO_DOCKER_REPO=${IMAGE} \
     VERSION=${VERSION} \
     ko build --tags ${VERSION} --bare --sbom ${IMG_SBOM} \
-      --image-label org.opencontainers.image.source="https://github.com/kubernetes-sigs/external-dns" \
+      --image-label org.opencontainers.image.source="https://github.com/romeroalx/external-dns" \
       --image-label org.opencontainers.image.revision=$(shell git rev-parse HEAD) \
-      --platform=${IMG_PLATFORM}  --push=${IMG_PUSH} .
+      --platform=${IMG_PLATFORM}  --push=${IMG_PUSH} --local .
 
 build.image/multiarch:
 	$(MAKE) IMG_PUSH=false build.push/multiarch
